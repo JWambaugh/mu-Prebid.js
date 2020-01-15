@@ -5,7 +5,8 @@
   "main": "src/prebid.js",
   "scripts": {
     "test": "gulp test",
-    "lint": "gulp lint"
+    "lint": "gulp lint",
+    "build": "gulp build --modules=modules.json && cp build/dist/prebid.js \"../../chromeWorkspace/mamasuncut-stage-assets.s3.us-east-2.amazonaws.com/js\""
   },
   "repository": {
     "type": "git",
@@ -101,6 +102,7 @@
     "dset": "2.0.1",
     "fun-hooks": "^0.9.5",
     "jsencrypt": "^3.0.0-rc.1",
-    "just-clone": "^1.0.2"
+    "just-clone": "^1.0.2",
+    "prettier": "^1.19.1"
   }
 }
