@@ -3,6 +3,8 @@ import adapterManager from '../src/adapterManager'
 
 const auctions = {}
 const adUnitAuctions = {}
+let floors = null
+let floorKey = 'android'
 
 const trackRevenue = revenue => {
   window.fbq('track', 'Purchase', { currency: 'USD', value: revenue })
@@ -11,6 +13,8 @@ const trackRevenue = revenue => {
 const auctionOver = (auction, googleEvent) => {
   console.log('mu_analytics: Auction completed', auction, googleEvent)
   const bidsSorted = auction.bidsReceived.sort((a, b) => b.cpm - a.cpm)
+  const floor = floors[floorKey][auction.adUnits[0].adunit]
+  console.log('floors: ', floorKey, floor)
 
   // no new ad
   if (googleEvent.isEmpty) {
@@ -40,6 +44,13 @@ const auctionOver = (auction, googleEvent) => {
         bidsSorted
       )
       trackRevenue(revenue)
+    } else {
+      const revenue = floor / 1000
+      console.log(
+        `mu_analytics: No bids found. Estimating Google floor of ${floor} cpm for revenue of ${revenue} `,
+        bidsSorted
+      )
+      trackRevenue(revenue)
     }
   }
 }
@@ -62,20 +73,8 @@ const handlers = {
     console.log('mu_analytics: bidWon', args, auction)
   },
 }
-window.googletag.cmd.push(() =>
-  window.googletag.pubads().addEventListener('slotRenderEnded', e => {
-    console.log(
-      'got slot render ended',
-      e,
-      e.slot.getSlotId().getId(),
-      e.slot.getAdUnitPath(),
-      e.slot.getSlotElementId()
-    )
-    auctionOver(adUnitAuctions[e.slot.getSlotElementId()], e)
-  })
-)
 
-var mamasUncutAdapter = Object.assign(adapter({}), {
+var mamasUncut = Object.assign(adapter({}), {
   track({ eventType, args }) {
     if (handlers[eventType]) {
       handlers[eventType](args)
@@ -83,9 +82,35 @@ var mamasUncutAdapter = Object.assign(adapter({}), {
   },
 })
 
+// save the base class function
+mamasUncut.originEnableAnalytics = mamasUncut.enableAnalytics
+
+// override enableAnalytics so we can get access to the config passed in from the page
+mamasUncut.enableAnalytics = config => {
+  floors = config.options.floors
+  floorKey =
+    config.options.device === 'desktop' ? 'desktop' : config.options.mobileOs
+  console.log('MamasUncut analytics initializing', config, floorKey)
+  window.googletag = window.googletag || { cmd: [] }
+  window.googletag.cmd.push(() =>
+    window.googletag.pubads().addEventListener('slotRenderEnded', e => {
+      console.log(
+        'got slot render ended',
+        e,
+        e.slot.getSlotId().getId(),
+        e.slot.getAdUnitPath(),
+        e.slot.getSlotElementId()
+      )
+      auctionOver(adUnitAuctions[e.slot.getSlotElementId()], e)
+    })
+  )
+
+  mamasUncut.originEnableAnalytics(config) // call the base class function
+}
+console.log('adapter:', mamasUncut)
 adapterManager.registerAnalyticsAdapter({
-  adapter: mamasUncutAdapter,
+  adapter: mamasUncut,
   code: 'mamasuncut',
 })
 
-export default mamasUncutAdapter
+export default mamasUncut
