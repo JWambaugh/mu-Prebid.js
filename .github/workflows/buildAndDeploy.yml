@@ -61,7 +61,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.awsAccess }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.awsSecret }}
           AWS_REGION: 'us-east-2' # optional: defaults to us-east-1
-          SOURCE_DIR: 'build/dist' # optional: defaults to entire repository
+          SOURCE_DIR: 'build' # optional: defaults to entire repository
           DEST_DIR: 'js'
   deployProd:
     needs: build
@@ -83,5 +83,5 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.awsAccess }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.awsSecret }}
           AWS_REGION: 'us-east-2' # optional: defaults to us-east-1
-          SOURCE_DIR: 'build/dist' # optional: defaults to entire repository
+          SOURCE_DIR: 'build' # optional: defaults to entire repository
           DEST_DIR: 'js'
