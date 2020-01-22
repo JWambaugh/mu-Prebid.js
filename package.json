@@ -6,6 +6,7 @@
   "scripts": {
     "test": "gulp test",
     "lint": "gulp lint",
+    "buildDev": "gulp build --modules=modules.json",
     "build": "gulp build --modules=modules.json && cp build/dist/prebid.js \"../../chromeWorkspace/mamasuncut-stage-assets.s3.us-east-2.amazonaws.com/js\""
   },
   "repository": {
