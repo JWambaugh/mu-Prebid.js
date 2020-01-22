@@ -43,7 +43,7 @@ jobs:
 
   deployStage:
     needs: build
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/mu_fb_analyticsAdapter'
     runs-on: ubuntu-latest
 
     steps:
@@ -65,7 +65,7 @@ jobs:
           DEST_DIR: 'js'
   deployProd:
     needs: build
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/mu_master'
     runs-on: ubuntu-latest
 
     steps:
