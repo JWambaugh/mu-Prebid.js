@@ -29,7 +29,7 @@ const auctionOver = (auction, googleEvent) => {
 
   if (auction.winningBids.length > 0) {
     const winningBid = auction.winningBids[0]
-    const revenue = winningBid.cpm / 1000
+    const revenue = winningBid.cpm
     console.log(
       `mu_analytics: Winning bid found. Reporting revenue of $${revenue}`,
       bidsSorted
@@ -38,14 +38,14 @@ const auctionOver = (auction, googleEvent) => {
   } else {
     // prebid didn't win, estimate CPM earned with highest bid plus 1 cent
     if (bidsSorted.length > 0) {
-      const revenue = (bidsSorted[0].cpm + 0.01) / 1000
+      const revenue = (bidsSorted[0].cpm + 0.01)
       console.log(
         `mu_analytics: No winning bid found. Using highest bid. Reporting revenue of ${revenue}`,
         bidsSorted
       )
       trackRevenue(revenue)
     } else {
-      const revenue = floor / 1000
+      const revenue = floor
       console.log(
         `mu_analytics: No bids found. Estimating Google floor of ${floor} cpm for revenue of ${revenue} `,
         bidsSorted
