@@ -7,6 +7,5 @@
   "appnexusBidAdapter",
   "gridBidAdapter",
   "audienceNetworkBidAdapter",
-  "trionBidAdapter",
   "mamasuncutAnalyticsAdapter"
 ]
