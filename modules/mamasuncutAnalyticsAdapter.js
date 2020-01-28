@@ -1,5 +1,6 @@
 import adapter from '../src/AnalyticsAdapter'
 import adapterManager from '../src/adapterManager'
+import { logMessage } from '../src/utils'
 
 const auctions = {}
 const adUnitAuctions = {}
@@ -11,14 +12,14 @@ const trackRevenue = revenue => {
 }
 
 const auctionOver = (auction, googleEvent) => {
-  console.log('mu_analytics: Auction completed', auction, googleEvent)
+  logMessage('mu_analytics: Auction completed', auction, googleEvent)
   const bidsSorted = auction.bidsReceived.sort((a, b) => b.cpm - a.cpm)
   const floor = floors[floorKey][auction.adUnits[0].adunit]
-  console.log('floors: ', floorKey, floor)
+  logMessage('floors: ', floorKey, floor)
 
   // no new ad
   if (googleEvent.isEmpty) {
-    console.log(
+    logMessage(
       `mu_analytics: auction ended with empty ad.`,
       auction,
       googleEvent
@@ -30,7 +31,7 @@ const auctionOver = (auction, googleEvent) => {
   if (auction.winningBids.length > 0) {
     const winningBid = auction.winningBids[0]
     const revenue = winningBid.cpm
-    console.log(
+    logMessage(
       `mu_analytics: Winning bid found. Reporting revenue of $${revenue}`,
       bidsSorted
     )
@@ -38,15 +39,15 @@ const auctionOver = (auction, googleEvent) => {
   } else {
     // prebid didn't win, estimate CPM earned with highest bid plus 1 cent
     if (bidsSorted.length > 0) {
-      const revenue = (bidsSorted[0].cpm + 0.01)
-      console.log(
+      const revenue = bidsSorted[0].cpm + 0.01
+      logMessage(
         `mu_analytics: No winning bid found. Using highest bid. Reporting revenue of ${revenue}`,
         bidsSorted
       )
       trackRevenue(revenue)
     } else {
       const revenue = floor
-      console.log(
+      logMessage(
         `mu_analytics: No bids found. Estimating Google floor of ${floor} cpm for revenue of ${revenue} `,
         bidsSorted
       )
@@ -57,11 +58,11 @@ const auctionOver = (auction, googleEvent) => {
 
 const handlers = {
   auctionInit: args => {
-    console.log('mu_analytics: auctionInit', args)
+    logMessage('mu_analytics: auctionInit', args)
     auctions[args.auctionId] = args
   },
   auctionEnd: args => {
-    console.log('mu_analytics: auctionEnd', args)
+    logMessage('mu_analytics: auctionEnd', args)
     const oldAuction = auctions[args.auctionId]
     const auction = { ...oldAuction, ...args }
     auctions[args.auctionId] = auction
@@ -70,7 +71,7 @@ const handlers = {
   bidWon: args => {
     const auction = auctions[args.auctionId]
     auction.winningBids.push(args)
-    console.log('mu_analytics: bidWon', args, auction)
+    logMessage('mu_analytics: bidWon', args, auction)
   },
 }
 
@@ -90,11 +91,11 @@ mamasUncut.enableAnalytics = config => {
   floors = config.options.floors
   floorKey =
     config.options.device === 'desktop' ? 'desktop' : config.options.mobileOs
-  console.log('MamasUncut analytics initializing', config, floorKey)
+  logMessage('MamasUncut analytics initializing', config, floorKey)
   window.googletag = window.googletag || { cmd: [] }
   window.googletag.cmd.push(() =>
     window.googletag.pubads().addEventListener('slotRenderEnded', e => {
-      console.log(
+      logMessage(
         'got slot render ended',
         e,
         e.slot.getSlotId().getId(),
@@ -107,7 +108,7 @@ mamasUncut.enableAnalytics = config => {
 
   mamasUncut.originEnableAnalytics(config) // call the base class function
 }
-console.log('adapter:', mamasUncut)
+logMessage('adapter:', mamasUncut)
 adapterManager.registerAnalyticsAdapter({
   adapter: mamasUncut,
   code: 'mamasuncut',
