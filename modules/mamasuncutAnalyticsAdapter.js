@@ -9,6 +9,12 @@ let floorKey = 'android'
 
 const trackRevenue = revenue => {
   window.fbq('track', 'Purchase', { currency: 'USD', value: revenue })
+
+  // track step with revenue
+  const stepRegex = /step([0-9]+)/gm
+  const match = stepRegex.exec(window.location.href)
+  logMessage('loging revenue with step', { step: match[1], value: revenue })
+  window.fbq('trackCustom', 'mu_opps', { step: match[1], value: revenue })
 }
 
 const auctionOver = (auction, googleEvent) => {
