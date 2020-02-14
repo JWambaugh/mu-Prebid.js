@@ -13,8 +13,9 @@ const trackRevenue = revenue => {
   // track step with revenue
   const stepRegex = /step([0-9]+)/gm
   const match = stepRegex.exec(window.location.href)
-  logMessage('loging revenue with step', { step: match[1], value: revenue })
-  window.fbq('trackCustom', 'mu_opps', { step: match[1], value: revenue })
+  const step = match[1] || '0'
+  logMessage('loging revenue with step', { step: step, value: revenue })
+  window.fbq('trackCustom', 'mu_opps', { step: step, value: revenue })
 }
 
 const auctionOver = (auction, googleEvent) => {
