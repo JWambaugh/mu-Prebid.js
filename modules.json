@@ -7,5 +7,7 @@
   "appnexusBidAdapter",
   "gridBidAdapter",
   "audienceNetworkBidAdapter",
-  "mamasuncutAnalyticsAdapter"
+  "spotxBidAdapter",
+  "mamasuncutAnalyticsAdapter",
+  "dfpAdServerVideo"
 ]
