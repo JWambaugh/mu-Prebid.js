@@ -4,10 +4,14 @@
   "sharethroughBidAdapter",
   "ixBidAdapter",
   "openxBidAdapter",
+  "33acrossBidAdapter",
+  "trionBidAdapter",
   "appnexusBidAdapter",
   "gridBidAdapter",
   "audienceNetworkBidAdapter",
   "spotxBidAdapter",
   "mamasuncutAnalyticsAdapter",
+  "consumableBidAdapter",
+  "underdogmediaBidAdapter",
   "dfpAdServerVideo"
 ]
