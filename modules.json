@@ -11,5 +11,7 @@
   "audienceNetworkBidAdapter",
   "spotxBidAdapter",
   "mamasuncutAnalyticsAdapter",
+  "consumableBidAdapter",
+  "underdogmediaBidAdapter",
   "dfpAdServerVideo"
 ]
