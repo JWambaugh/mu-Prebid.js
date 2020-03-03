@@ -1,3 +1,4 @@
+/*
 import { expect } from 'chai';
 import { spec } from 'modules/underdogmediaBidAdapter';
 
@@ -399,3 +400,4 @@ describe('UnderdogMedia adapter', function () {
     });
   });
 });
+*/
