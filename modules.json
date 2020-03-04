@@ -11,6 +11,7 @@
   "teadsBidAdapter",
   "audienceNetworkBidAdapter",
   "spotxBidAdapter",
+  "emx_digitalBidAdapter",
   "mamasuncutAnalyticsAdapter",
   "consumableBidAdapter",
   "underdogmediaBidAdapter",
