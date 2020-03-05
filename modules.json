@@ -15,5 +15,6 @@
   "mamasuncutAnalyticsAdapter",
   "consumableBidAdapter",
   "underdogmediaBidAdapter",
+  "tripleliftBidAdapter",
   "dfpAdServerVideo"
 ]
