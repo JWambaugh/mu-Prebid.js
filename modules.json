@@ -12,6 +12,7 @@
   "audienceNetworkBidAdapter",
   "spotxBidAdapter",
   "emx_digitalBidAdapter",
+  "yieldmoBidAdapter",
   "mamasuncutAnalyticsAdapter",
   "consumableBidAdapter",
   "underdogmediaBidAdapter",
