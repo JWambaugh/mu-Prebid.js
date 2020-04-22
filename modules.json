@@ -17,5 +17,6 @@
   "rubiconBidAdapter",
   "pubmaticBidAdapter",
   "prebidServerBidAdapter",
+  "33acrossBidAdapter",
   "dfpAdServerVideo"
 ]
