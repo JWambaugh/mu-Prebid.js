@@ -16,5 +16,6 @@
   "tripleliftBidAdapter",
   "rubiconBidAdapter",
   "pubmaticBidAdapter",
+  "prebidServerBidAdapter",
   "dfpAdServerVideo"
 ]
