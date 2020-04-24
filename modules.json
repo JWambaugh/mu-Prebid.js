@@ -15,5 +15,8 @@
   "underdogmediaBidAdapter",
   "tripleliftBidAdapter",
   "rubiconBidAdapter",
+  "pubmaticBidAdapter",
+  "prebidServerBidAdapter",
+  "33acrossBidAdapter",
   "dfpAdServerVideo"
 ]
