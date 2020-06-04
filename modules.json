@@ -18,5 +18,6 @@
   "pubmaticBidAdapter",
   "prebidServerBidAdapter",
   "33acrossBidAdapter",
+  "sovrnBidAdapter",
   "dfpAdServerVideo"
 ]
