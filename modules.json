@@ -19,5 +19,6 @@
   "prebidServerBidAdapter",
   "33acrossBidAdapter",
   "sovrnBidAdapter",
+  "brightcomBidAdapter",
   "dfpAdServerVideo"
 ]
