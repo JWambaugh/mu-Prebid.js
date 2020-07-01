@@ -20,5 +20,6 @@
   "33acrossBidAdapter",
   "sovrnBidAdapter",
   "brightcomBidAdapter",
+  "googleAnalyticsAdapter",
   "dfpAdServerVideo"
 ]
