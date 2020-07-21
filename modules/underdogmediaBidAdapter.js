@@ -1,25 +1,44 @@
-let bidfactory = require('../src/bidfactory.js');
-let adloader = require('../src/adloader.js');
-let utils = require('../src/utils.js');
-let adapterManager = require('../src/adapterManager');
-let _addBidResponse;
-let _done;
-let responsesProcessed = {};
-let UDM_ADAPTER_VERSION = '1.38-2.44.1C';
-let UDM_VENDOR_ID = '159';
-let LATEST_TEST_DATE = '2020-01-02';
+import * as utils from '../src/utils.js';
+import { config } from '../src/config.js';
+import { registerBidder } from '../src/adapters/bidderFactory.js';
+const BIDDER_CODE = 'underdogmedia';
+const UDM_ADAPTER_VERSION = '3.5V';
+const UDM_VENDOR_ID = '159';
+const prebidVersion = '$prebid.version$';
+let USER_SYNCED = false;
 
-let UnderdogMediaAdapter = function UnderdogMediaAdapter() {
-  utils.logMessage(`Initializing UDM Adapter. PBJS Version: ${$$PREBID_GLOBAL$$.version} with adapter version: ${UDM_ADAPTER_VERSION}  Updated/tested ${LATEST_TEST_DATE}`);
-  let getJsStaticUrl = 'https://bid.underdog.media/udm_header_lib.js';
-  $$PREBID_GLOBAL$$.handleUnderdogMediaCB = function () { };
-  function _callBids(bidderRequest, addBidResponse, done) {
-    _addBidResponse = addBidResponse;
-    _done = done;
-    let gdpr = {
-      gdprApplies: false,
-      consentGiven: true,
-      consentData: ''
+utils.logMessage(`Initializing UDM Adapter. PBJS Version: ${prebidVersion} with adapter version: ${UDM_ADAPTER_VERSION}  Updated 20191028`);
+
+// helper function for testing user syncs
+export function resetUserSync() {
+  USER_SYNCED = false;
+}
+
+export const spec = {
+  code: BIDDER_CODE,
+  bidParams: [],
+
+  isBidRequestValid: function (bid) {
+    const bidSizes = bid.mediaTypes && bid.mediaTypes.banner && bid.mediaTypes.banner.sizes ? bid.mediaTypes.banner.sizes : bid.sizes;
+    return !!((bid.params && bid.params.siteId) && (bidSizes && bidSizes.length > 0));
+  },
+
+  buildRequests: function (validBidRequests, bidderRequest) {
+    var sizes = [];
+    var siteId = 0;
+
+    validBidRequests.forEach(bidParam => {
+      let bidParamSizes = bidParam.mediaTypes && bidParam.mediaTypes.banner && bidParam.mediaTypes.banner.sizes ? bidParam.mediaTypes.banner.sizes : bidParam.sizes;
+      sizes = utils.flatten(sizes, utils.parseSizesInput(bidParamSizes));
+      siteId = bidParam.params.siteId;
+    });
+
+    let data = {
+      tid: 1,
+      dt: 10,
+      sid: siteId,
+      sizes: sizes.join(','),
+      version: UDM_ADAPTER_VERSION
     }
     if (bidderRequest && bidderRequest.gdprConsent) {
       if (typeof bidderRequest.gdprConsent.gdprApplies !== 'undefined') {
@@ -34,10 +53,55 @@ let UnderdogMediaAdapter = function UnderdogMediaAdapter() {
       }
     }
 
-    if (!gdpr.gdprApplies || gdpr.consentGiven) {
-      if (typeof window.udm_header_lib === 'undefined') {
-        adloader.loadScript(getJsStaticUrl, function () {
-          bid(bidderRequest);
+    if (bidderRequest.uspConsent) {
+      data.uspConsent = bidderRequest.uspConsent;
+    }
+
+    if (!data.gdprApplies || data.consentGiven) {
+      return {
+        method: 'GET',
+        url: 'https://udmserve.net/udm/img.fetch',
+        data: data,
+        bidParams: validBidRequests
+      };
+    }
+  },
+
+  getUserSyncs: function (syncOptions, serverResponses) {
+    if (!USER_SYNCED && serverResponses.length > 0 && serverResponses[0].body && serverResponses[0].body.userSyncs && serverResponses[0].body.userSyncs.length > 0) {
+      USER_SYNCED = true;
+      const userSyncs = serverResponses[0].body.userSyncs;
+      const syncs = userSyncs.filter(sync => {
+        const {type} = sync;
+        if (syncOptions.iframeEnabled && type === 'iframe') {
+          return true
+        }
+        if (syncOptions.pixelEnabled && type === 'image') {
+          return true
+        }
+      })
+      return syncs;
+    }
+  },
+
+  interpretResponse: function (serverResponse, bidRequest) {
+    const bidResponses = [];
+    bidRequest.bidParams.forEach(bidParam => {
+      serverResponse.body.mids.forEach(mid => {
+        if (mid.useCount > 0) {
+          return;
+        }
+
+        if (!mid.useCount) {
+          mid.useCount = 0;
+        }
+
+        var sizeNotFound = true;
+        const bidParamSizes = bidParam.mediaTypes && bidParam.mediaTypes.banner && bidParam.mediaTypes.banner.sizes ? bidParam.mediaTypes.banner.sizes : bidParam.sizes
+        utils.parseSizesInput(bidParamSizes).forEach(size => {
+          if (size === mid.width + 'x' + mid.height) {
+            sizeNotFound = false;
+          }
         });
       } else {
         bid(bidderRequest);
@@ -78,11 +142,18 @@ let UnderdogMediaAdapter = function UnderdogMediaAdapter() {
     udmBidRequest.send();
   }
 
-  function bidResponseCallback(bid, bids) {
-    return function (bidResponse) {
-      bidResponseAvailable(bid, bidResponse, bids);
-    };
-  }
+        const bidResponse = {
+          requestId: bidParam.bidId,
+          bidderCode: spec.code,
+          cpm: parseFloat(mid.cpm),
+          width: mid.width,
+          height: mid.height,
+          ad: mid.ad_code_html,
+          creativeId: mid.mid,
+          currency: 'USD',
+          netRevenue: false,
+          ttl: mid.ttl || 60,
+        };
 
   function bidResponseAvailable(bidRequest, bidResponse, bids) {
     if (bidResponse.bids.length > 0) {
@@ -113,18 +184,37 @@ let UnderdogMediaAdapter = function UnderdogMediaAdapter() {
           utils.logMessage('Underdogmedia bid is lacking both ad_url and ad_html, skipping bid');
           continue;
         }
-        _addBidResponse(bidRequest.adUnitCode, bid);
-      }
-    } else {
-      let nobid = bidfactory.createBid(2, bidRequest);
-      nobid.bidderCode = bidRequest.bidder;
-      _addBidResponse(bidRequest.adUnitCode, nobid);
-    }
-    responsesProcessed[bidRequest.auctionId]++;
-    if (responsesProcessed[bidRequest.auctionId] >= bids) {
-      delete responsesProcessed[bidRequest.auctionId];
-      _done();
-    }
+
+        mid.useCount++;
+
+        bidResponse.ad += makeNotification(bidResponse, mid, bidParam);
+
+        bidResponses.push(bidResponse);
+      });
+    });
+
+    return bidResponses;
+  },
+};
+
+function makeNotification(bid, mid, bidParam) {
+  let url = mid.notification_url;
+
+  const versionIndex = url.indexOf(';version=')
+  if (versionIndex + 1) {
+    url = url.substring(0, versionIndex)
+  }
+
+  url += `;version=${UDM_ADAPTER_VERSION}`;
+  url += ';cb=' + Math.random();
+  url += ';qqq=' + (1 / bid.cpm);
+  url += ';hbt=' + config.getConfig('_bidderTimeout');
+  url += ';style=adapter';
+  url += ';vis=' + encodeURIComponent(document.visibilityState);
+
+  url += ';traffic_info=' + encodeURIComponent(JSON.stringify(getUrlVars()));
+  if (bidParam.params.subId) {
+    url += ';subid=' + encodeURIComponent(bidParam.params.subId);
   }
 
   function getSpec() {
