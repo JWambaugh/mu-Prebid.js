@@ -8,8 +8,6 @@
   "appnexusBidAdapter",
   "gridBidAdapter",
   "teadsBidAdapter",
-  "spotxBidAdapter",
-  "emx_digitalBidAdapter",
   "yieldmoBidAdapter",
   "mamasuncutAnalyticsAdapter",
   "underdogmediaBidAdapter",
@@ -19,8 +17,5 @@
   "prebidServerBidAdapter",
   "33acrossBidAdapter",
   "sovrnBidAdapter",
-  "brightcomBidAdapter",
-  "googleAnalyticsAdapter",
-  "prebidmanagerAnalyticsAdapter",
   "dfpAdServerVideo"
 ]
