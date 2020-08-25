@@ -12,5 +12,6 @@
   "prebidServerBidAdapter",
   "33acrossBidAdapter",
   "sovrnBidAdapter",
-  "dfpAdServerVideo"
+  "dfpAdServerVideo",
+  "amxBidAdapter"
 ]
