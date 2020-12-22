@@ -14,5 +14,6 @@
   "sovrnBidAdapter",
   "dfpAdServerVideo",
   "amxBidAdapter",
+  "kargoBidAdapter",
   "consentManagement"
 ]
