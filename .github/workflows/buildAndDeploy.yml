@@ -47,13 +47,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v2
+
       - name: Download built js from build
         uses: actions/download-artifact@v1
         with:
           name: build
 
       - name: deploy to s3
-        uses: jakejarvis/s3-sync-action@master
+        uses: ./.github/actions/s3-sync-action
         with:
           args: --acl public-read --follow-symlinks
         env:
@@ -69,13 +71,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v2
+
       - name: Download built js from build
         uses: actions/download-artifact@v1
         with:
           name: build
 
       - name: deploy to s3
-        uses: jakejarvis/s3-sync-action@master
+        uses: ./.github/actions/s3-sync-action
         with:
           args: --acl public-read --follow-symlinks
         env:
