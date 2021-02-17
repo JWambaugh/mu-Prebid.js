@@ -1,5 +1,4 @@
 [
-  "gumgumBidAdapter",
   "sharethroughBidAdapter",
   "ixBidAdapter",
   "openxBidAdapter",
@@ -14,6 +13,5 @@
   "sovrnBidAdapter",
   "dfpAdServerVideo",
   "amxBidAdapter",
-  "kargoBidAdapter",
   "consentManagement"
 ]
