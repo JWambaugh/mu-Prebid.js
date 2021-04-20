@@ -13,5 +13,7 @@
   "sovrnBidAdapter",
   "dfpAdServerVideo",
   "amxBidAdapter",
+  "unrulyBidAdapter",
+  "emxdigitalBidAdapter",
   "consentManagement"
 ]
